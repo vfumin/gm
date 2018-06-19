@@ -21,7 +21,7 @@ class ProvidersGiftCardsViewController:UIViewController{
     
     override func viewDidLoad() {
         hero.isEnabled = true
-        title = "gifts"
+        title = "Gift Cards"
                // self.navigationController?.setNavigationBarHidden(true, animated: false)
         self.view.backgroundColor = .gmMainBackground
         tableView.rowHeight = 240
@@ -47,7 +47,7 @@ class ProvidersGiftCardsViewController:UIViewController{
             isLoaded = true
         }
         notificationDispose = NotificationCenter.default.rx.notification(.showGiftCard).subscribe(onNext: {notification in
-            if let cardView = notification.object as? RoundedCardWrapperView{
+            if let cardView = notification.object as? GiftCardView{
                 self.showGiftCard(cardView)
             }
         })
@@ -55,15 +55,12 @@ class ProvidersGiftCardsViewController:UIViewController{
     }
     
     override func viewDidDisappear(_ animated: Bool) {
-//        bindingTableDispose?.dispose()
-//        bindingTableDispose = nil
-        
         notificationDispose?.dispose()
         notificationDispose = nil
     }
     
-    private func showGiftCard(_ cardView: RoundedCardWrapperView){
-        var card = cardView.cardView.card
+    private func showGiftCard(_ cardView: GiftCardView){
+        let card = cardView.card
         let cardHeroId = "card\(card.id)"
         cardView.hero.modifiers = [.useNormalSnapshot, .spring(stiffness: 250, damping: 25)]
         cardView.hero.id = cardHeroId
@@ -75,11 +72,11 @@ class ProvidersGiftCardsViewController:UIViewController{
         
         vc.cardView.hero.id = cardHeroId
         vc.cardView.hero.modifiers = [.useNoSnapshot, .spring(stiffness: 250, damping: 25)]
-        vc.cardView.cardView.load(card: card, provider: cardView.cardView.provider)
-        vc.contentCard.hero.modifiers = [.source(heroID: cardHeroId), .spring(stiffness: 250, damping: 25)]
+        vc.cardView.load(card: card, provider: cardView.provider)
+        vc.scrollContainer.hero.modifiers = [.source(heroID: cardHeroId), .spring(stiffness: 250, damping: 25)]
         
         vc.contentView.hero.modifiers = [.useNoSnapshot, .forceAnimate, .spring(stiffness: 250, damping: 25)]
-        vc.contentView.setText(cardView.cardView.card.description_)
+        vc.contentView.setText(cardView.card.description_)
         
         vc.visualEffectView.hero.modifiers = [.fade, .useNoSnapshot]
         

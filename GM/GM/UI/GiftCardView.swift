@@ -15,30 +15,43 @@ class GiftCardView: UIView {
     var card = GiftCard()
     var provider = Provider()
     
-    let costLabel = UILabel()
-    let creditsLabel = UILabel()
-    let coinsLabel = UILabel()
-    let imageView = UIImageView()
-    let bottom = UIView()
-    let preloader = UIActivityIndicatorView()
-    let format = NumberFormatter()
+    private let costLabel = UILabel()
+    private let creditsLabel = UILabel()
+    private let coinsLabel = UILabel()
+    private let imageView = UIImageView()
+    private let bottom = UIView()
+    private let preloader = UIActivityIndicatorView()
+    private let format = NumberFormatter()
+    
+    private let container = UIView()
     
     required init?(coder aDecoder: NSCoder) { fatalError() }
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        backgroundColor = .white //UIColor.getColor(245, 244, 242)
-        clipsToBounds = true
+    init(costFontSize: Float = 20, creditsFontSize: Float = 20, coinsFontSize: Float = 15) {
+        super.init(frame: CGRect.zero)
+        backgroundColor = .clear
         
-        costLabel.initLabel(fontSize: 20, color: .darkGray, bold: true)
-        creditsLabel.initLabel(fontSize: 20, color: .white, bold: true)
-        coinsLabel.initLabel(fontSize: 15, color: UIColor.white.withAlphaComponent(0.8), bold: true)
+        costLabel.initLabel(fontSize: costFontSize, color: .darkGray, bold: true)
+        creditsLabel.initLabel(fontSize: creditsFontSize, color: .white, bold: true)
+        coinsLabel.initLabel(fontSize: coinsFontSize, color: UIColor.white.withAlphaComponent(0.8), bold: true)
         coinsLabel.setText("coins")
         imageView.contentMode = .scaleAspectFill
         imageView.backgroundColor = UIColor.clear
         
         preloader.hidesWhenStopped = true
         
-        addViews(bottom, imageView, costLabel, creditsLabel, coinsLabel, preloader)
+        container.frame = bounds
+        container.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        container.translatesAutoresizingMaskIntoConstraints = true
+        container.addViews(bottom, imageView, costLabel, creditsLabel, coinsLabel, preloader)
+        add(container)
+        
+        container.backgroundColor = .white //UIColor.getColor(245, 244, 242)
+        container.clipsToBounds = true
+        container.layer.cornerRadius = 14
+        layer.shadowColor = UIColor.black.cgColor
+        layer.shadowRadius = 6
+        layer.shadowOpacity = 0.15
+        layer.shadowOffset = CGSize(width: 0, height: 4)
     }
     
     public func load(card: GiftCard, provider: Provider){
@@ -68,12 +81,12 @@ class GiftCardView: UIView {
         super.layoutSubviews()
         let w = bounds.width
         let h = bounds.height
-        let th = h - bottom.frame.height
         imageView.resize(width: w/2, height: h/3)
         
         bottom.resize(width: w, height: h*0.3)
         bottom.alignToBottom()
         
+        let th = h - bottom.frame.height
         imageView.setXY(x: 20, y: (th - imageView.frame.height) / 2)
         
         costLabel.setXY(x: w/1.5, y: (th - costLabel.frame.height) / 2)
@@ -82,8 +95,8 @@ class GiftCardView: UIView {
     }
 }
 
-class RoundedCardWrapperView: UIView {
-    let cardView = GiftCardView()
+class CardWrapperView: UIView {
+    let innerCardView = GiftCardView()
     
     var isTouched: Bool = false {
         didSet {
@@ -98,22 +111,19 @@ class RoundedCardWrapperView: UIView {
     required init?(coder aDecoder: NSCoder) { fatalError() }
     override init(frame: CGRect) {
         super.init(frame: frame)
-        cardView.layer.cornerRadius = 14
-        layer.shadowColor = UIColor.black.cgColor
-        layer.shadowRadius = 6
-        layer.shadowOpacity = 0.15
-        layer.shadowOffset = CGSize(width: 0, height: 4)
-        addSubview(cardView)
+        
+        addSubview(innerCardView)
     }
+    
     override func layoutSubviews() {
         super.layoutSubviews()
-        if cardView.superview == self {
+        if innerCardView.superview == self {
             // this is necessary because we used `.useNoSnapshot` modifier on cardView.
             // we don't want cardView to be resized when Hero is using it for transition
-            cardView.frame = bounds
+            innerCardView.frame = bounds
         }
-        layer.shadowPath = UIBezierPath(roundedRect: bounds, cornerRadius: layer.cornerRadius).cgPath
     }
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
         isTouched = true

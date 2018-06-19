@@ -11,13 +11,13 @@ import UIKit
 import RxSwift
 import RxGesture
 class GiftCardViewCell: UICollectionViewCell{
-    let cardView = RoundedCardWrapperView()
+    let cardView = CardWrapperView()
     private let disposeBag = DisposeBag()
     override init(frame: CGRect) {
         super.init(frame: frame)
         contentView.addSubview(cardView)
         cardView.rx.tapGesture().when(.recognized).subscribe(onNext: {_ in
-            NotificationCenter.default.post(name: .showGiftCard, object: self.cardView)
+            NotificationCenter.default.post(name: .showGiftCard, object: self.cardView.innerCardView)
         }).disposed(by: disposeBag)
         cardView.frame = bounds
     }

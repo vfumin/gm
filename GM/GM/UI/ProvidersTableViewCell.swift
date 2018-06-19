@@ -49,8 +49,6 @@ class ProvidersTableViewCell: UITableViewCell{
         collectionView.reloadData()
     }
     
- 
-    
     public func load(provider: Provider){
         title.text = provider.title
         
@@ -58,7 +56,7 @@ class ProvidersTableViewCell: UITableViewCell{
         
         let items = Observable.just(provider.gift_cards)
         bindingDispose = items.bind(to: collectionView.rx.items(cellIdentifier: "cell", cellType: GiftCardViewCell.self))({(row, card, cell) in
-            cell.cardView.cardView.load(card: card, provider: provider)
+            cell.cardView.innerCardView.load(card: card, provider: provider)
         })
         bindingDispose?.disposed(by: disposeBag)
     }

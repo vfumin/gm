@@ -13,9 +13,10 @@ import Hero
 class GiftCardViewController: UIViewController{
     let visualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
     
-    let contentCard = UIView()
-    let cardView = RoundedCardWrapperView()
+    let scrollContainer = UIScrollView()
+    let cardView = GiftCardView(costFontSize: 36, creditsFontSize: 36, coinsFontSize: 26)
     let contentView = UILabel()
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,13 +25,12 @@ class GiftCardViewController: UIViewController{
         view.addSubview(visualEffectView)
         
         contentView.numberOfLines = 0
+        contentView.backgroundColor = UIColor.clear
         
-        contentCard.backgroundColor = .white
-        contentCard.clipsToBounds = true
-        
-        contentCard.addSubview(contentView)
-        contentCard.addSubview(cardView)
-        view.addSubview(contentCard)
+        scrollContainer.backgroundColor = UIColor.clear
+        scrollContainer.addSubview(contentView)
+        scrollContainer.addSubview(cardView)
+        view.addSubview(scrollContainer)
         
     }
     
@@ -38,11 +38,11 @@ class GiftCardViewController: UIViewController{
         super.viewDidLayoutSubviews()
         let bounds = view.bounds
         visualEffectView.frame  = bounds
-        contentCard.frame  = bounds
+        scrollContainer.frame = bounds
         let m: CGFloat = 20
         let w = bounds.width - m * 2
         cardView.frame = CGRect(x: m, y: 80, width: w, height: w / 1.3)
         contentView.setXY(x: m, y: cardView.frame.maxY + m)
-        
+        scrollContainer.contentSize = CGSize(width: bounds.width, height: contentView.frame.maxY + m)
     }
 }
